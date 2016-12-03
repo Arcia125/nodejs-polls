@@ -1,0 +1,27 @@
+{
+  "name": "nodejs-polls",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.14.0",
+    "angular": "^1.5.9",
+    "mongodb": "^2.2.12"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node app.js",
+    "pushP": "git push",
+    "pushD": "git push heroku master"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arcia125/nodejs-polls.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Arcia125/nodejs-polls/issues"
+  },
+  "homepage": "https://github.com/Arcia125/nodejs-polls#readme"
+}
