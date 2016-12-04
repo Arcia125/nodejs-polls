@@ -11,8 +11,7 @@
   "devDependencies": {},
   "scripts": {
     "start": "node app.js",
-    "pushP": "git push",
-    "pushD": "git push heroku master"
+    "push": "git push heroku master && git push origin master"
   },
   "repository": {
     "type": "git",
