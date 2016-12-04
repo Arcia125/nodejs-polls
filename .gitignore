@@ -1,4 +1,3 @@
 /node_modules/
-config.js
-configDev.js
 npm-debug.log
+.env
