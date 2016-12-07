@@ -4,11 +4,32 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
-    "express": "^4.14.0",
     "angular": "^1.5.9",
-    "mongodb": "^2.2.12"
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "express-session": "^1.14.2",
+    "mongodb": "^2.2.12",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "passport-twitter": "^1.0.4",
+    "serve-static": "^1.11.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.8",
+    "babel-preset-es2015": "^6.18.0",
+    "css-loader": "^0.26.1",
+    "file-loader": "^0.9.0",
+    "node-sass": "^3.13.0",
+    "open-browser-webpack-plugin": "0.0.3",
+    "sass-loader": "^4.0.2",
+    "source-map-loader": "^0.1.5",
+    "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2"
+  },
   "scripts": {
     "start": "node app.js",
     "push": "git push heroku master && git push origin master"
