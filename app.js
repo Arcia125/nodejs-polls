@@ -53,6 +53,17 @@ passport.use(new TwitterStrategy({
     }
 ));
 
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+    // User.findById(id, (err, user) => {
+    //     done(err, user);
+    // });
+    done(null, user);
+});
+
 
 
 
@@ -62,7 +73,6 @@ app.use(bodyParser());
 app.use(expressSession({ secret: 'test1' }));
 app.use(passport.initialize());
 app.use(passport.session());
-// app.use(app.router);
 
 
 app.get('/', (req, res) => {
