@@ -14,7 +14,7 @@ const TwitterStrategy = require('passport-twitter').Strategy;
 const config = require('./config');
 const db = require('./db');
 
-const Users = db.get().collection('users');
+
 
 
 passport.use(new LocalStrategy(
@@ -110,3 +110,5 @@ db.connect(config.db.url, function(err) {
         });
     }
 });
+
+const Users = db.get().collection('users');
