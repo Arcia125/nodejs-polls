@@ -44,7 +44,14 @@ passport.use(new TwitterStrategy({
     callbackURL: `${config.hostName}/auth/twitter/callback`
     },
     function(token, tokenSecret, profile, done) {
-        Users.findOrCreate({ id: profile.id }, function(err, user) {
+        Users.findAndModify({
+            query: { id: profile.id },
+            update: {
+                $setOnInsert: { id: profile.id }
+            }
+            new: true,
+            upsert: true
+        }, function(err, user) {
             if (err) {
                 return done(err);
             }
@@ -58,7 +65,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-    Users.findById(id, (err, user) => {
+    Users.findOne({ id: id }, (err, user) => {
         done(err, user);
     });
 });
