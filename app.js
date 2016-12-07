@@ -45,12 +45,12 @@ passport.use(new TwitterStrategy({
     },
     function(token, tokenSecret, profile, done) {
         Users.findAndModify({
-            query: { id: profile.id },
-            update: {
-                $setOnInsert: { id: profile.id }
-            }
-            new: true,
-            upsert: true
+            id: profile.id
+        },
+        [['id', 'asc']], {
+            $set: { id: profile.id }
+        }, {
+            new: true, upsert: true
         }, function(err, user) {
             if (err) {
                 return done(err);
