@@ -14,6 +14,7 @@ const TwitterStrategy = require('passport-twitter').Strategy;
 const config = require('./config');
 const db = require('./db');
 
+let Users;
 
 
 
@@ -107,8 +108,7 @@ db.connect(config.db.url, function(err) {
     } else {
         app.listen(config.port, () => {
             console.log(`App listening on port ${config.port}`);
+            Users = db.get().collection('users');
         });
     }
 });
-
-const Users = db.get().collection('users');
