@@ -48,7 +48,7 @@ passport.use(new TwitterStrategy({
         //     }
         //     done(null, user);
         // });
-        done(null, token);
+        done(null, 1);
         console.log(token, tokenSecret, profile, done);
     }
 ));
