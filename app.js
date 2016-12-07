@@ -14,6 +14,7 @@ const TwitterStrategy = require('passport-twitter').Strategy;
 const config = require('./config');
 const db = require('./db');
 
+console.log(config.hostName);
 
 
 passport.use(new localStrategy(
