@@ -8,17 +8,18 @@ const bodyParser = require('body-parser');
 const expressSession = require('express-session');
 
 const passport = require('passport');
-const localStrategy = require('passport-local').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
 const TwitterStrategy = require('passport-twitter').Strategy;
 
 const config = require('./config');
 const db = require('./db');
 
+const Users = db.get().collection('users');
 
 
-passport.use(new localStrategy(
+passport.use(new LocalStrategy(
     function(username, password, done) {
-        User.findOne({ username: username }, function (err, user) {
+        Users.findOne({ username: username }, function (err, user) {
             if (err) {
                 return done(err);
             }
@@ -42,14 +43,12 @@ passport.use(new TwitterStrategy({
     callbackURL: `${config.hostName}/auth/twitter/callback`
     },
     function(token, tokenSecret, profile, done) {
-        // User.findOrCreate(..., function(err, user) {
-        //     if (err) {
-        //         return done(err);
-        //     }
-        //     done(null, user);
-        // });
-        done(null, 1);
-        console.log(token, tokenSecret, profile, done);
+        Users.findOrCreate({ id: profile.id }, function(err, user) {
+            if (err) {
+                return done(err);
+            }
+            done(null, user);
+        });
     }
 ));
 
@@ -58,10 +57,9 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-    // User.findById(id, (err, user) => {
-    //     done(err, user);
-    // });
-    done(null, user);
+    Users.findById(id, (err, user) => {
+        done(err, user);
+    });
 });
 
 
