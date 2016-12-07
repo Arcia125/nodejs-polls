@@ -88,9 +88,7 @@ app.get('/', (req, res) => {
 app.get('/auth/twitter', passport.authenticate('twitter'));
 
 app.get('/auth/twitter/callback',
-    passport.authenticate('twitter', { failureRedirect: '/login' }), (req, res) => {
-        res.redirect('/');
-    });
+    passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/login' }));
 
 app.get('/login', (req, res) => {
     res.send(path.join(__dirname, '/views/index.html'));
