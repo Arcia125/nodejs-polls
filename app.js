@@ -80,7 +80,7 @@ app.use(cookieParser());
 // app.use(bodyParser());
 app.use(expressSession({ secret: 'test1' }));
 app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.session({ secret: 'test1'}));
 
 
 app.get('/', (req, res) => {
@@ -96,13 +96,13 @@ app.get('/login', (req, res) => {
     res.send(path.join(__dirname, '/views/index.html'));
 });
 
-app.get('/polls', (req, res) => {
+app.get('/polls', passport.authenticate('twitter'), (req, res) => {
     const polls = db.get().collection('polls');
     polls.find().sort({_id: -1}).toArray((err, docs) => {
         if (err) {
             return err;
         }
-        console.log(req);
+        console.log(req.user);
         res.send({ polls: docs });
     });
 });
