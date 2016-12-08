@@ -14,12 +14,12 @@ const TwitterStrategy = require('passport-twitter').Strategy;
 const config = require('./config');
 const db = require('./db');
 
-let Users;
 
 
 
 passport.use(new LocalStrategy(
     function(username, password, done) {
+        const Users = db.get().collection('users');
         Users.findOne({ username: username }, function (err, user) {
             if (err) {
                 return done(err);
@@ -44,6 +44,7 @@ passport.use(new TwitterStrategy({
     callbackURL: `${config.hostName}/auth/twitter/callback`
     },
     function(token, tokenSecret, profile, done) {
+        const Users = db.get().collection('users');
         Users.findAndModify({
             id: profile.id
         },
@@ -65,6 +66,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
+    const Users = db.get().collection('users');
     Users.findOne({ id: id }, (err, user) => {
         done(err, user);
     });
@@ -94,6 +96,11 @@ app.get('/login', (req, res) => {
     res.send(path.join(__dirname, '/views/index.html'));
 });
 
+app.get('/polls', (req, res) => {
+    const polls = db.get().collection('polls');
+    res.send(polls.find());
+});
+
 app.get('/api/search/:search', (req, res) => {
     res.send('route1');
 });
@@ -113,7 +120,6 @@ db.connect(config.db.url, function(err) {
     } else {
         app.listen(config.port, () => {
             console.log(`App listening on port ${config.port}`);
-            Users = db.get().collection('users');
         });
     }
 });
