@@ -102,7 +102,7 @@ app.get('/polls', (req, res) => {
         if (err) {
             return err;
         }
-        console.log(req.user);
+        console.log(req);
         res.send({ polls: docs });
     });
 });
