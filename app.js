@@ -102,8 +102,13 @@ app.get('/polls', (req, res) => {
         if (err) {
             return err;
         }
-        res.send(docs);
+        console.log(req.user);
+        res.send({ polls: docs });
     });
+});
+
+app.post('/polls/new', (req, res) => {
+    console.log(req);
 });
 
 app.get('/api/search/:search', (req, res) => {
