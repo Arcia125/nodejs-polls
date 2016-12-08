@@ -29,7 +29,7 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(userObj, done) {
     let users = db.get().collection('users');
-    users.find({"twitter.id": userObj["twitter.id"]}, function(err, user) {
+    users.findOne({"twitter.id": userObj["twitter.id"]}, function(err, user) {
         console.log(`deserializeUser typeof user${typeof user} user:${user}`);
         done(err, user);
     });
