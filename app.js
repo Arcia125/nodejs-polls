@@ -98,7 +98,12 @@ app.get('/login', (req, res) => {
 
 app.get('/polls', (req, res) => {
     const polls = db.get().collection('polls');
-    res.send(polls.find());
+    polls.find().sort({_id: -1}).toArray((err, docs) => {
+        if (err) {
+            return err;
+        }
+        res.send(docs);
+    });
 });
 
 app.get('/api/search/:search', (req, res) => {
