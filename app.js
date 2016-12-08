@@ -73,10 +73,10 @@ passport.deserializeUser((id, done) => {
 
 
 
-app.use(serveStatic('public'));
-app.use(cookieParser());
-app.use(bodyParser());
-app.use(expressSession({ secret: 'test1' }));
+// app.use(serveStatic('public'));
+// app.use(cookieParser());
+// app.use(bodyParser());
+// app.use(expressSession({ secret: 'test1' }));
 app.use(passport.initialize());
 app.use(passport.session());
 
