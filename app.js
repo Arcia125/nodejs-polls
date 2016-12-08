@@ -29,7 +29,7 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(userObj, done) {
     let users = db.get().collection('users');
-    users.findOne({"twitter.id": userObj["twitter.id"]}, function(err, user) {
+    users.findOne({"twitterId": userObj["twitterId"]}, function(err, user) {
         console.log(`deserializeUser typeof user${typeof user} user:${user}`);
         done(err, user);
     });
@@ -42,7 +42,7 @@ passport.use(new TwitterStrategy({
 }, function(token, tokenSecret, profile, done) {
     process.nextTick(function() {
         let users = db.get().collection('users');
-        users.findOne({ "twitter.id": profile.id }, function(err, user) {
+        users.findOne({ "twitterId": profile.id }, function(err, user) {
             if (err) {
                 return done(err);
             }
@@ -53,13 +53,13 @@ passport.use(new TwitterStrategy({
                 return done(null, user);
             } else {
                 let newUser = {
-                    "twitter.id": profile.id,
-                    "twitter.token": token,
-                    "twitter.username": profile.username,
-                    "twitter.displayName": profile.displayName
+                    "twitterId": profile.id,
+                    "twitterToken": token,
+                    "twitterUsername": profile.username,
+                    "twitterDisplayName": profile.displayName
                 };
                 users.findAndModify({
-                    "twitter.id": profile.id
+                    "twitterId": profile.id
                 },
                 [['_id', 'asc']],
                 {$set: newUser}, function(err, object) {
