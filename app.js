@@ -84,7 +84,7 @@ app.get('/', function(req, res) {
 
 app.get('/profile', function(req, res) {
     console.log(`app.get('/profile') typeof req.user:${typeof req.user} req.user:${req.user}`);
-    res.send("logged in");
+    res.send(req.user);
 });
 
 app.get('/auth/twitter', passport.authenticate('twitter'));
