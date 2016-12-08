@@ -30,6 +30,7 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(userObj, done) {
     let users = db.get().collection('users');
     users.find({"twitter.id": userObj["twitter.id"]}, function(err, user) {
+        console.log(`deserializeUser typeof user${typeof user} user:${user}`);
         done(err, user);
     });
 });
@@ -45,8 +46,9 @@ passport.use(new TwitterStrategy({
             if (err) {
                 return done(err);
             }
+            console.log(`passport.use(twitterStrategy) typeof user${typeof user} user:${user}`);
             if (user) {
-                return done(null, user);
+                return done(null, user.value);
             } else {
                 let newUser = {
                     "twitter.id": profile.id,
