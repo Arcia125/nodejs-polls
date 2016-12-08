@@ -46,8 +46,10 @@ passport.use(new TwitterStrategy({
             if (err) {
                 return done(err);
             }
-            console.log(`passport.use(twitterStrategy) typeof user${typeof user} user:${user}`);
+            console.log(`passport.use(twitterStrategy) typeof user:${typeof user} user:${user}`);
             if (user) {
+                console.log(`if user`);
+                console.log(user);
                 return done(null, user.value);
             } else {
                 let newUser = {
@@ -77,7 +79,7 @@ app.get('/', function(req, res) {
 });
 
 app.get('/profile', function(req, res) {
-    console.log(`app.get('/profile') typeof req.user:${typeof req.user}req.user:${req.user}
+    console.log(`app.get('/profile') typeof req.user:${typeof req.user} req.user:${req.user}
         req.user.value:${req.user.value} typeof req.user.value:${typeof req.user.value}`);
     res.send("logged in");
 });
