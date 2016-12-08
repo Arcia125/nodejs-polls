@@ -50,7 +50,7 @@ passport.use(new TwitterStrategy({
             if (user) {
                 console.log(`if user`);
                 console.log(user);
-                return done(null, user.value);
+                return done(null, user);
             } else {
                 let newUser = {
                     "twitter.id": profile.id,
@@ -79,8 +79,7 @@ app.get('/', function(req, res) {
 });
 
 app.get('/profile', function(req, res) {
-    console.log(`app.get('/profile') typeof req.user:${typeof req.user} req.user:${req.user}
-        req.user.value:${req.user.value} typeof req.user.value:${typeof req.user.value}`);
+    console.log(`app.get('/profile') typeof req.user:${typeof req.user} req.user:${req.user}`);
     res.send("logged in");
 });
 
