@@ -75,7 +75,8 @@ app.get('/', function(req, res) {
 });
 
 app.get('/profile', function(req, res) {
-    res.send(JSON.stringify(req.user));
+    console.log(req.user);
+    res.send("logged in");
 });
 
 app.get('/auth/twitter', passport.authenticate('twitter'));
