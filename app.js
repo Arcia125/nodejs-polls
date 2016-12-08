@@ -30,7 +30,7 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(userObj, done) {
     let users = db.get().collection('users');
     users.findOne({"twitterId": userObj["twitterId"]}, function(err, user) {
-        console.log(`deserializeUser typeof user${typeof user} user:${user}`);
+        console.log(`deserializeUser typeof user:${typeof user} user:${user}`);
         done(err, user);
     });
 });
@@ -61,8 +61,12 @@ passport.use(new TwitterStrategy({
                 users.findAndModify({
                     "twitterId": profile.id
                 },
-                [['_id', 'asc']],
-                {$set: newUser}, function(err, object) {
+                null,
+                { $setOnInsert: newUser }, {
+                    new: true,
+                    fields: {twitterId: 1, twitterToken: 1, twitterUsername: 1, twitterDisplayName: 1, _id: 0 },
+                    upsert: true,
+                }, function(err, object) {
                     if (err) {
                         console.log(err.message);
                     } else {
