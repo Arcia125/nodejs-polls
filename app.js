@@ -82,7 +82,7 @@ app.get('/auth/twitter', passport.authenticate('twitter'));
 
 app.get('/auth/twitter/callback', passport.authenticate('twitter', {
         sucessRedirect: '/profile',
-        failureRedirect: '/'
+        failureRedirect: '/failed'
     }));
 
 function isLoggedIn(req, res, next) {
@@ -92,6 +92,10 @@ function isLoggedIn(req, res, next) {
 
     res.redirect('/');
 }
+
+app.get('failed', (req, res) => {
+    res.send("Failed to authenticate");
+});
 
 
 db.connect(config.db.url, function(err) {
