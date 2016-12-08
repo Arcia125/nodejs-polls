@@ -80,10 +80,11 @@ app.get('/profile', function(req, res) {
 
 app.get('/auth/twitter', passport.authenticate('twitter'));
 
-app.get('/auth/twitter/callback:token', passport.authenticate('twitter', {
-        sucessRedirect: '/profile',
-        failureRedirect: '/failed'
-    }));
+app.get('/auth/twitter/callback',
+        passport.authenticate('twitter', {
+            successRedirect : '/profile',
+            failureRedirect : '/'
+        }));
 
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
