@@ -75,7 +75,7 @@ app.get('/', function(req, res) {
 });
 
 app.get('/profile', function(req, res) {
-    res.send({user: req.user});
+    res.send(req.user);
 });
 
 app.get('/auth/twitter', passport.authenticate('twitter'));
