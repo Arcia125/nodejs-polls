@@ -23,14 +23,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser((user, done) => {
     done(null, user);
 });
 
-passport.deserializeUser(function(userObj, done) {
+passport.deserializeUser((userObj, done) => {
     let users = db.get().collection('users');
-    users.findOne({"twitterId": userObj["twitterId"]}, function(err, user) {
-        console.log(`deserializeUser typeof user:${typeof user} user:${user}`);
+    users.findOne({ "twitterId": userObj["twitterId"] }, (err, user) => {
         done(err, user);
     });
 });
@@ -38,18 +37,15 @@ passport.deserializeUser(function(userObj, done) {
 passport.use(new TwitterStrategy({
     consumerKey: config.twitter.c_key,
     consumerSecret: config.twitter.c_secret,
-    callbackURL: 'https://nodejs-polls.herokuapp.com/auth/twitter/callback'
-}, function(token, tokenSecret, profile, done) {
+    callbackURL: `${config.hostName}/auth/twitter/callback`
+}, (token, tokenSecret, profile, done) => {
     process.nextTick(function() {
         let users = db.get().collection('users');
-        users.findOne({ "twitterId": profile.id }, function(err, user) {
+        users.findOne({ "twitterId": profile.id }, (err, user) => {
             if (err) {
                 return done(err);
             }
-            console.log(`passport.use(twitterStrategy) typeof user:${typeof user} user:${user}`);
             if (user) {
-                console.log(`if user`);
-                console.log(user);
                 return done(null, user);
             } else {
                 let newUser = {
@@ -59,43 +55,41 @@ passport.use(new TwitterStrategy({
                     "twitterDisplayName": profile.displayName
                 };
                 users.findAndModify({
-                    "twitterId": profile.id
-                },
-                null,
-                { $setOnInsert: newUser }, {
-                    new: true,
-                    fields: {twitterId: 1, twitterToken: 1, twitterUsername: 1, twitterDisplayName: 1, _id: 0 },
-                    upsert: true,
-                }, function(err, object) {
-                    if (err) {
-                        console.log(err.message);
-                    } else {
-                        return done(null, newUser);
-                    }
-                });
+                        "twitterId": profile.id
+                    },
+                    null, { $setOnInsert: newUser }, {
+                        new: true,
+                        fields: { twitterId: 1, twitterToken: 1, twitterUsername: 1, twitterDisplayName: 1, _id: 0 },
+                        upsert: true,
+                    }, (err, object) => {
+                        if (err) {
+                            console.log(err.message);
+                        } else {
+                            return done(null, newUser);
+                        }
+                    });
             }
         });
     });
 }));
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/views/index.html'));
 });
 
-app.get('/profile', function(req, res) {
-    console.log(`app.get('/profile') typeof req.user:${typeof req.user} req.user:${req.user}`);
+app.get('/profile', (req, res) => {
     res.send(req.user);
 });
 
 app.get('/auth/twitter', passport.authenticate('twitter'));
 
 app.get('/auth/twitter/callback',
-        passport.authenticate('twitter', {
-            successRedirect : '/profile',
-            failureRedirect : '/'
-        }));
+    passport.authenticate('twitter', {
+        successRedirect: '/profile',
+        failureRedirect: '/'
+    }));
 
-function isLoggedIn(req, res, next) {
+const isLoggedIn = (req, res, next) => {
     if (req.isAuthenticated()) {
         return next();
     }
@@ -108,14 +102,11 @@ app.get('failed', (req, res) => {
 });
 
 
-db.connect(config.db.url, function(err) {
+db.connect(config.db.url, (err) => {
     if (err) {
-        console.log('Unable to connect to Mongodb.');
         throw err;
         process.exit(1);
     } else {
-        app.listen(config.port, () => {
-            console.log(`App listening on port ${config.port}`);
-        });
+        app.listen(config.port, () => {});
     }
 });

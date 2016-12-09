@@ -3,7 +3,7 @@
 const config = {};
 config.port = process.env.PORT;
 config.isDev = !!process.env.DEV;
-config.hostName = config.isDev ? `localhost:${config.port}` : 'https://nodejs-polls.herokuapp.com';
+config.hostName = config.isDev ? `http://localhost:${config.port}` : 'https://nodejs-polls.herokuapp.com';
 
 config.db = {};
 config.db.host = process.env.DBHOST;
