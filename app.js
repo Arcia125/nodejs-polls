@@ -5,6 +5,7 @@ const path = require('path');
 const passport = require('passport');
 const flash = require('connect-flash');
 
+const expressStatic = require('express-static');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
@@ -15,13 +16,25 @@ const TwitterStrategy = require('passport-twitter').Strategy;
 const config = require('./config');
 const db = require('./db');
 
+const React = require('react');
+const ReactDOMServer = require('react-dom/server');
+
+require('node-jsx').install({
+    harmony: true,
+    extension: ".jsx"
+});
+
+const Main = React.createFactory(require('./MainComponent'));
+
 app.use(cookieParser());
 app.use(bodyParser());
 
+app.use(expressStatic(__dirname + '/views'));
 app.use(session({ secret: 'secret12345' }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+app.set('view engine', 'ejs');
 
 passport.serializeUser((user, done) => {
     done(null, user);
@@ -73,8 +86,15 @@ passport.use(new TwitterStrategy({
     });
 }));
 
+
+
+
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/views/index.html'));
+    // res.sendFile(path.join(__dirname, '/views/index.html'));
+    let markup = ReactDOMServer.renderToString(Main());
+    res.render("index", {
+        markup: markup
+    });
 });
 
 app.get('/profile', (req, res) => {

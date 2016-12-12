@@ -21,7 +21,7 @@
 </head>
 
 <body>
-<form action="/login" method="post">
+<!-- <form action="/login" method="post">
     <div>
         <label>Username:</label>
         <input type="text" name="username"/>
@@ -50,9 +50,13 @@
     <div>
         <input type="submit" value="Register"/>
     </div>
-</form>
+</form> -->
 <a href='/auth/twitter'>Sign in with Twitter</a>
 <a href='/polls'>polls</a>
+<div class='react-anchor'>
+    <%- markup %>
+</div>
+<script src="/bundle.js"></script>
 </body>
 
 </html>
