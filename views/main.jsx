@@ -2,9 +2,17 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Router, Route, BrowserHistory, match } from 'react-router';
 
-import MainComponent from '../MainComponent.jsx';
+import routes from './../routes.jsx';
 
-ReactDOM.render(<MainComponent/>, document.getElementsByClassName('react-anchor')[0]);
 
-console.log('client side'); 
+// ReactDOM.render(<Router history={BrowserHistory} >
+// 					{routes}
+// 				</Router>,
+// 	);
+
+match({ routes, location: window.location.pathname }, (error, redirectLocation, renderProps) => {
+  ReactDOM.render(<Router {...renderProps} />, document.getElementsByClassName('react-anchor')[0])
+})
+
