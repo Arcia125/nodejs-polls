@@ -30,29 +30,6 @@ const routes = require('./routes');
 const MainComponent = React.createFactory(require('./components/MainComponent'));
 const Routing = React.createFactory(reactRouter.RouterContext);
 
-app.use(cookieParser());
-app.use(bodyParser());
-
-app.use(expressStatic(__dirname + '/views'));
-app.use(session({ secret: 'secret12345' }));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(flash());
-app.set('view engine', 'ejs');
-
-passport.serializeUser((user, done) => {
-    done(null, user);
-});
-
-passport.deserializeUser((userObj, done) => {
-    let users = db.get().collection('users');
-    users.findOne({ "twitterId": userObj["twitterId"] }, (err, user) => {
-        done(err, user);
-    });
-});
-
-
-    
 passport.use(new TwitterStrategy({
     consumerKey: config.twitter.c_key,
     consumerSecret: config.twitter.c_secret,
@@ -65,6 +42,7 @@ passport.use(new TwitterStrategy({
                 return done(err);
             }
             if (user) {
+                console.log(`TwitterStrategy found user ${user}.`);
                 return done(null, user);
             } else {
                 let newUser = {
@@ -83,6 +61,7 @@ passport.use(new TwitterStrategy({
                     }, (err, object) => {
                         if (err) {
                             console.log(err.message);
+                            return done(err);
                         } else {
                             return done(null, newUser);
                         }
@@ -92,8 +71,54 @@ passport.use(new TwitterStrategy({
     });
 }));
 
+passport.serializeUser((user, done) => {
+    console.log(`Serialized user ${user}.`);
+    done(null, user);
+});
 
+passport.deserializeUser((userObj, done) => {
+    let users = db.get().collection('users');
+    users.findOne({ "twitterId": userObj["twitterId"] }, (err, user) => {
+        console.log(`Deserialized ${user}.`)
+        done(err, user);
+    });
+});
 
+app.set('view engine', 'ejs');
+
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.use(expressStatic(__dirname + '/views'));
+app.use(session({ secret: 'secret12345', resave: true, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
+// app.use(passport.authenticate('twitter', {}, ));
+
+app.use((req, res, next) => {
+    if (req.user) {
+        console.log('added user to session');
+        req.session.user = req.user;
+    }
+    console.log('req.user:');
+    console.dir(req.user);
+    console.log('req.session:');
+    console.dir(req.session);
+
+    next();
+});
+
+// app.get('*', (req, res, next) => {
+//     req.login(req.user, err => {
+//         if (err) {
+//             return next(err);
+//         }
+//         return next();
+//     })
+// });
 
 app.get('*', (req, res, next) => {
     // res.sendFile(path.join(__dirname, '/views/index.html'));
@@ -121,12 +146,14 @@ app.get('/auth/twitter', passport.authenticate('twitter'));
 
 app.get('/auth/twitter/callback',
     passport.authenticate('twitter', {
-        successRedirect: '/profile',
+        successRedirect: '/',
         failureRedirect: '/'
-    }));
+}));
 
 app.get('/api/polls', (req, res) => {
-    res.json({ user: req.user, data: 'data5359' });
+    let user = req.session.user || null;
+    console.log('called endpoint /api/polls');
+    res.json({ user: user, data: 'data5359' });
 });
 const isLoggedIn = (req, res, next) => {
     if (req.isAuthenticated()) {
@@ -135,13 +162,13 @@ const isLoggedIn = (req, res, next) => {
     res.redirect('/');
 }
 
-
-
 db.connect(config.db.url, (err) => {
     if (err) {
         throw err;
         process.exit(1);
     } else {
-        app.listen(config.port, () => {});
+        app.listen(config.port, () => {
+            console.log(`App listening on port:${config.port}`);
+        });
     }
 });
