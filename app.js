@@ -152,7 +152,7 @@ app.get('/auth/twitter/callback',
 
 app.get('/api/polls', (req, res) => {
     let user = req.session.user || null;
-    console.log('called endpoint /api/polls');
+    // console.log('called endpoint /api/polls');
     res.json({ user: user, data: 'data5359' });
 });
 const isLoggedIn = (req, res, next) => {
