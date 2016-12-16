@@ -1,15 +1,49 @@
 <!doctype html>
+    <head>
+        <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        
+        .page-content {
+            margin-right: auto;
+            margin-left: auto;
+            width: 80vw;
+            padding-right: 5rem;
+            padding-left: 5rem;
+        }
+        
+        .code-example {
+            color: green;
+        }
+        </style>
 
-<head>
-<title>Nodejs Polls</title>
-</head>
+         <script src="/bundle.js"></script>
+    </head>
 
-<body>
+    <body>
+        <nav class='nav-bar'>
+            <a href='/' class='page-title'>Nodejs Polls</a>
+            <% if (username) { %>
+                <a href='/user/polls' class='my-polls'>My Polls</a>
+                <a href='/polls/new' class='new-poll'>New Poll</a>
+                <a href='/user/' class='username'><%= username %></a>
+                <a href='/signout' class='signout'>Sign out</a>
+            <% } else { %>
+                <a href='/auth/twitter' class='twitter-login'>Sign in with Twitter</a>
+            <% } %>
+        </nav>
+        
+        <% if (polls) { %>
+            <div class='polls'>
+                <% polls.forEach(poll => { %>
+                    <a class='poll' href='/polls/<%= poll._id %>'>
+                        <div class='poll__container'>
+                            <span class='poll__title'><%= poll.title %></span>
+                        </div>
+                    </a>
+                <% }); %>
+        <% } %>
 
-<div class='react-anchor'>
-    <%- markup %>
-</div>
-<script src="/bundle.js"></script>
-</body>
-
+    </body>
 </html>

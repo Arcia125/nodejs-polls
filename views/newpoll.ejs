@@ -1,0 +1,45 @@
+<!doctype html>
+    <head>
+        <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        
+        .page-content {
+            margin-right: auto;
+            margin-left: auto;
+            width: 80vw;
+            padding-right: 5rem;
+            padding-left: 5rem;
+        }
+        
+        .code-example {
+            color: green;
+        }
+        </style>
+    </head>
+
+    <body>
+        <a href='/' class='page-title'>Nodejs Polls</a>
+        <a href='/user/polls'>My Polls</a>
+        <a href='/polls/new'>New Poll</a>
+        <p class='username'><%= username %></p>
+        <a href='/signout'>Sign out</a>
+
+        <form action="/polls/create" method="post" class='create-poll'>
+            <div>
+                <label>Title:</label>
+                <input type="text" name="title"/>
+            </div>
+            <div>
+                <label>Options (separated by comma):</label>
+                <input type="text" name="choices"/>
+            </div>
+            <div>
+                <input type="submit" value="Create"/>
+            </div>
+        </form>
+        </div>
+
+    </body>
+</html>

@@ -13,22 +13,9 @@ const session = require('express-session');
 const LocalStrategy = require('passport-local').Strategy;
 const TwitterStrategy = require('passport-twitter').Strategy;
 
-const React = require('react');
-const ReactDOMServer = require('react-dom/server');
-const reactRouter = require('react-router');
 
 const config = require('./config');
 const db = require('./db');
-
-require('node-jsx').install({
-    harmony: true,
-    extension: ".jsx"
-});
-
-const routes = require('./routes');
-
-const MainComponent = React.createFactory(require('./components/MainComponent'));
-const Routing = React.createFactory(reactRouter.RouterContext);
 
 passport.use(new TwitterStrategy({
     consumerKey: config.twitter.c_key,
@@ -98,18 +85,18 @@ app.use(flash());
 
 // app.use(passport.authenticate('twitter', {}, ));
 
-app.use((req, res, next) => {
-    if (req.user) {
-        console.log('added user to session');
-        req.session.user = req.user;
-    }
-    console.log('req.user:');
-    console.dir(req.user);
-    console.log('req.session:');
-    console.dir(req.session);
+// app.use((req, res, next) => {
+//     // if (req.user) {
+//     //     console.log('added user to session');
+//     //     req.session.user = req.user;
+//     // }
+//     console.log('req.user:');
+//     console.dir(req.user);
+//     console.log('req.session:');
+//     console.dir(req.session);
 
-    next();
-});
+//     next();
+// });
 
 // app.get('*', (req, res, next) => {
 //     req.login(req.user, err => {
@@ -120,27 +107,53 @@ app.use((req, res, next) => {
 //     })
 // });
 
-app.get('*', (req, res, next) => {
+app.get('/', (req, res, next) => {
     // res.sendFile(path.join(__dirname, '/views/index.html'));
-    // let markup = ReactDOMServer.renderToString(MainComponent({ name: 'hello' }));
-    // res.render("index", { markup: markup });
-    reactRouter.match({ routes, location: req.url }, (error, redirectLocation, renderProps) => {
-        if (error) {
-            res.status(500).send(error.message);
-        } else if (redirectLocation) {
-            res.redirect(302, redirectLocation.pathname + redirectLocation.search);
-        } else if (renderProps) {
-            let markup = ReactDOMServer.renderToString(Routing(Object.assign({}, renderProps, { name: 'what up' })));
-            res.status(200).render("index", { markup: markup });
-        } else {
-            next();
+    // let markup = ReactDOMServer.renderToString(MainComponent());
+    let pollsCollection = db.get().collection('polls');
+    pollsCollection.find({}).toArray((err, docs) => {
+        if (err) {
+            console.log(err);
+            return;
         }
+        let username = req.user ? req.user.twitterUsername : null;
+        console.dir(docs);
+        let polls = docs.length > 0 ? docs : null;
+        res.render("index", { username: username, polls: polls });
     });
 });
 
-app.get('/profile', (req, res) => {
-    res.send(req.user);
+app.get('/polls/new', (req, res) => {
+    if (!req.user) {
+        res.redirect('/');
+        console.log("Not logged in");
+    }
+    res.render("newpoll", { username: req.user.twitterUsername });
 });
+
+app.post('/polls/create', (req, res) => {
+    if (!req.user) {
+        res.redirect('/');
+        console.log("Not logged in");
+    }
+    let pollsCollection = db.get().collection('polls');
+    let choices = req.body.choices.split(', ').map(choice => {
+        return { name: choice, votes: 0 };
+    });
+    pollsCollection.insertOne({
+        timestamp: Date.now(),
+        user: req.user.twitterId,
+        title: req.body.title,
+        choices: choices
+    });
+    res.redirect('/');
+    // res.redirect(`/polls/`);
+
+});
+
+// app.get('/profile', (req, res) => {
+//     res.send(req.user);
+// });
 
 app.get('/auth/twitter', passport.authenticate('twitter'));
 
@@ -150,17 +163,17 @@ app.get('/auth/twitter/callback',
         failureRedirect: '/'
 }));
 
-app.get('/api/polls', (req, res) => {
-    let user = req.session.user || null;
-    console.log('called endpoint /api/polls');
-    res.json({ user: user, data: 'data5359' });
-});
-const isLoggedIn = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect('/');
-}
+// app.get('/api/polls', (req, res) => {
+//     let user = req.session.user || null;
+//     console.log('called endpoint /api/polls');
+//     res.json({ user: user, data: 'data5359' });
+// });
+// const isLoggedIn = (req, res, next) => {
+//     if (req.isAuthenticated()) {
+//         return next();
+//     }
+//     res.redirect('/');
+// }
 
 db.connect(config.db.url, (err) => {
     if (err) {
