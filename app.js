@@ -83,33 +83,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-// app.use(passport.authenticate('twitter', {}, ));
-
-// app.use((req, res, next) => {
-//     // if (req.user) {
-//     //     console.log('added user to session');
-//     //     req.session.user = req.user;
-//     // }
-//     console.log('req.user:');
-//     console.dir(req.user);
-//     console.log('req.session:');
-//     console.dir(req.session);
-
-//     next();
-// });
-
-// app.get('*', (req, res, next) => {
-//     req.login(req.user, err => {
-//         if (err) {
-//             return next(err);
-//         }
-//         return next();
-//     })
-// });
-
 app.get('/', (req, res, next) => {
-    // res.sendFile(path.join(__dirname, '/views/index.html'));
-    // let markup = ReactDOMServer.renderToString(MainComponent());
     let pollsCollection = db.get().collection('polls');
     pollsCollection.find({}).toArray((err, docs) => {
         if (err) {
@@ -117,7 +91,6 @@ app.get('/', (req, res, next) => {
             return;
         }
         let username = req.user ? req.user.twitterUsername : null;
-        console.dir(docs);
         let polls = docs.length > 0 ? docs : null;
         res.render("index", { username: username, polls: polls });
     });
@@ -147,13 +120,7 @@ app.post('/polls/create', (req, res) => {
         choices: choices
     });
     res.redirect('/');
-    // res.redirect(`/polls/`);
-
 });
-
-// app.get('/profile', (req, res) => {
-//     res.send(req.user);
-// });
 
 app.get('/auth/twitter', passport.authenticate('twitter'));
 
@@ -162,18 +129,6 @@ app.get('/auth/twitter/callback',
         successRedirect: '/',
         failureRedirect: '/'
 }));
-
-// app.get('/api/polls', (req, res) => {
-//     let user = req.session.user || null;
-//     console.log('called endpoint /api/polls');
-//     res.json({ user: user, data: 'data5359' });
-// });
-// const isLoggedIn = (req, res, next) => {
-//     if (req.isAuthenticated()) {
-//         return next();
-//     }
-//     res.redirect('/');
-// }
 
 db.connect(config.db.url, (err) => {
     if (err) {
