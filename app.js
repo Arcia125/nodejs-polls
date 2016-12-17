@@ -29,7 +29,6 @@ passport.use(new TwitterStrategy({
                 return done(err);
             }
             if (user) {
-                console.log(`TwitterStrategy found user ${user}.`);
                 return done(null, user);
             } else {
                 let newUser = {
@@ -59,14 +58,12 @@ passport.use(new TwitterStrategy({
 }));
 
 passport.serializeUser((user, done) => {
-    console.log(`Serialized user ${user}.`);
     done(null, user);
 });
 
 passport.deserializeUser((userObj, done) => {
     let users = db.get().collection('users');
     users.findOne({ "twitterId": userObj["twitterId"] }, (err, user) => {
-        console.log(`Deserialized ${user}.`)
         done(err, user);
     });
 });
@@ -90,24 +87,27 @@ app.get('/', (req, res, next) => {
             console.log(err);
             return;
         }
-        let username = req.user ? req.user.twitterUsername : null;
-        let polls = docs.length > 0 ? docs : null;
-        res.render("index", { username: username, polls: polls });
+        const username = req.user ? req.user.twitterUsername : null;
+        const polls = docs.length > 0 ? docs : null;
+        const flashMsg = req.flash('info') || null;
+        res.render("index", { username: username, polls: polls, expressFlash: flashMsg });
     });
 });
 
 app.get('/polls/new', (req, res) => {
     if (!req.user) {
+        req.flash('info', 'You have to be a registered user to create a new poll.');
         res.redirect('/');
-        console.log("Not logged in");
+        return;
     }
     res.render("newpoll", { username: req.user.twitterUsername });
 });
 
 app.post('/polls/create', (req, res) => {
     if (!req.user) {
+        req.flash('info', 'You have to be a registered user to create a new poll.');
         res.redirect('/');
-        console.log("Not logged in");
+        return;
     }
     let pollsCollection = db.get().collection('polls');
     let choices = req.body.choices.split(', ').map(choice => {
@@ -129,6 +129,11 @@ app.get('/auth/twitter/callback',
         successRedirect: '/',
         failureRedirect: '/'
 }));
+
+app.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
+});
 
 db.connect(config.db.url, (err) => {
     if (err) {

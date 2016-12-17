@@ -20,6 +20,14 @@
     color: #000;
 }
 
+.error-text {
+    color: red;
+}
+
+.flash-message__info {
+    @extend .error-text;
+}
+
 a {
 	@extend .node-button;
 }
