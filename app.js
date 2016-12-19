@@ -82,7 +82,7 @@ app.use(flash());
 
 app.get(`/`, (req, res, next) => {
   const pollsCollection = db.get().collection(`polls`);
-  pollsCollection.find({}).toArray((err, docs) => {
+  pollsCollection.find({}).sort({ timestamp: -1 }).toArray((err, docs) => {
     if (err) {
       console.log(err);
       return;
@@ -131,6 +131,25 @@ app.get(`/auth/twitter/callback`,
 app.get(`/logout`, (req, res) => {
   req.logout();
   res.redirect(`/`);
+});
+
+app.get(`/user`, (req, res) => {
+  if (!req.user) {
+    res.flash(`info`, `You are not signed in.`);
+    res.redirect(`/`);
+    return;
+  }
+  const pollsCollection = db.get().collection(`polls`);
+  pollsCollection.find({ user: req.user.twitterId }).sort({ timestamp: -1 }).toArray((err, docs) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    const username = req.user ? req.user.twitterUsername : null;
+    const polls = docs.length > 0 ? docs : null;
+    const flashMsg = req.flash(`info`) || null;
+    res.render(`user`, { username, polls, expressFlash: flashMsg });
+  });
 });
 
 db.connect(config.db.url, (err) => {

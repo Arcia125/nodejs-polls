@@ -16,8 +16,8 @@
     font-size: 1rem;
     border-radius: .25rem;
     margin: .2rem;
-    background: #ccc;
-    color: #000;
+    background: #FFF;
+    color: #223;
 }
 
 .error-text {
@@ -28,8 +28,36 @@
     @extend .error-text;
 }
 
-a {
-	@extend .node-button;
+body {
+    margin: 0;
+    font-family: sans-serif;
 }
 
+a {
+    @extend .node-button;
+}
+
+.nav-bar {
+    background: #DADADA;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    & > a {
+        background: none;
+        color: #223;
+    }
+}
+
+.polls {
+    margin: 1rem 10rem;
+    background: #DADADA;
+    padding: 1rem 5rem;
+}
+
+.poll {
+    display: block;
+    text-align: center;
+}
 
