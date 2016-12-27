@@ -116,7 +116,9 @@ app.post(`/polls/create`, (req, res) => {
     user: req.user.twitterId,
     title: req.body.title,
     choices,
+    voters: [],
   });
+  req.flash(`info`, `You have created the poll ${req.body.title}`);
   res.redirect(`/`);
 });
 
@@ -135,7 +137,7 @@ app.get(`/logout`, (req, res) => {
 
 app.get(`/user`, (req, res) => {
   if (!req.user) {
-    res.flash(`info`, `You are not signed in.`);
+    req.flash(`info`, `You are not signed in.`);
     res.redirect(`/`);
     return;
   }
@@ -149,6 +151,89 @@ app.get(`/user`, (req, res) => {
     const polls = docs.length > 0 ? docs : null;
     const flashMsg = req.flash(`info`) || null;
     res.render(`user`, { username, polls, expressFlash: flashMsg });
+  });
+});
+
+app.get(`/polls/:pollID`, (req, res) => {
+  const pollsCollection = db.get().collection(`polls`);
+  try {
+    db.findById(req.params.pollID, pollsCollection, (err, poll) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      const username = req.user ? req.user.twitterUsername : null;
+      const flashMsg = req.flash(`info`) || null;
+      res.render(`poll`, { username, poll, expressFlash: flashMsg });
+    });
+  }
+  catch (e) {
+    req.flash(`info`, `Poll not found.`);
+    res.redirect(`/`);
+  }
+});
+
+app.post(`/polls/vote/:pollID`, (req, res) => {
+  const pollsCollection = db.get().collection(`polls`);
+
+  pollsCollection.updateOne({
+    "_id": db.oID(req.params.pollID),
+    "choices.name": req.body.choices,
+  }, {
+    $inc: { "choices.$.votes": 1 },
+  }, (err, data) => {
+    if (err) {
+      console.log(err);
+    }
+    req.flash(`info`, `You voted for ${req.body.choices}.`);
+    res.redirect(`/`);
+  });
+});
+
+app.get(`/polls/delete/:pollID`, (req, res) => {
+  if (!req.user) {
+    req.flash(`info`, `You must be logged in to delete polls.`);
+    res.redirect(`/`);
+    return;
+  }
+  const pollsCollection = db.get().collection(`polls`);
+  db.findById(req.params.pollID, pollsCollection, (findOneError, poll) => {
+    if (findOneError) {
+      console.log(findOneError);
+    }
+    if (!(req.user.twitterId === poll.user)) {
+      req.flash(`info`, `You are not authorized to delete this poll.`);
+      res.redirect(`/`);
+      return;
+    }
+    pollsCollection.findAndRemove({
+      "_id": db.oID(req.params.pollID),
+    }, null, (findAndRemoveErr, doc) => {
+      if (findAndRemoveErr) {
+        console.log(findAndRemoveErr);
+      }
+      req.flash(`info`, `You removed the poll titled:${doc.value.title}.`);
+      res.redirect(`/`);
+      return;
+    });
+  });
+});
+
+app.post(`/polls/newchoice/:pollID`, (req, res) => {
+  if (!req.user) {
+    req.flash(`info`, `You must be logged into create a new poll option.`);
+  }
+  const pollsCollection = db.get().collection(`polls`);
+  pollsCollection.updateOne({
+    "_id": db.oID(req.params.pollID),
+  }, {
+    $push: { "choices": { name: req.body.choice, votes: 0 } },
+  }, (err, poll) => {
+    if (err) {
+      console.log(err);
+    }
+    req.flash(`info`, `You added the option:${req.body.choice}.`);
+    res.redirect(`/`);
   });
 });
 

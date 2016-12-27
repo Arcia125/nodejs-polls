@@ -38,7 +38,7 @@ a {
 }
 
 .nav-bar {
-    background: #DADADA;
+    background: #EAEAEA;
     margin-bottom: 1rem;
     display: flex;
     flex-direction: row;
@@ -52,12 +52,17 @@ a {
 
 .polls {
     margin: 1rem 10rem;
-    background: #DADADA;
+    background: #EAEAEA;
     padding: 1rem 5rem;
+    border-radius: 8px;
 }
 
 .poll {
     display: block;
     text-align: center;
+}
+
+.poll-name {
+    margin-top: 0;
 }
 
