@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const TwitterStrategy = require("passport-twitter").Strategy;
+const path = require("path");
 
 const config = require("./config");
 const db = require("./db");
@@ -84,7 +85,6 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(expressStatic(`${__dirname}/views`));
 app.use(
   session({ secret: "secret12345", resave: true, saveUninitialized: true })
 );
@@ -269,6 +269,8 @@ app.post("/polls/newchoice/:pollID", (req, res) => {
     }
   );
 });
+
+app.use(expressStatic(path.join(__dirname, "views")));
 
 db.connect(
   config.db.url,
