@@ -1,18 +1,15 @@
 const express = require("express");
-const app = express();
-
 const passport = require("passport");
 const flash = require("connect-flash");
-
 const expressStatic = require("express-static");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const session = require("express-session");
-
 const TwitterStrategy = require("passport-twitter").Strategy;
 
 const config = require("./config");
 const db = require("./db");
+const app = express();
 
 passport.use(
   new TwitterStrategy(
